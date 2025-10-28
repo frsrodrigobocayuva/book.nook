@@ -2,32 +2,32 @@ import requests
 from flask import current_app
 
 def search_books(query, max_results=10):
-    """Busca livros usando a API do Google Books."""
     api_key = current_app.config.get("GOOGLE_BOOKS_API_KEY")
     base_url = "https://www.googleapis.com/books/v1/volumes"
 
-    params = {
-        "q": query,
-        "maxResults": max_results,
-        "key": api_key
-    }
+    params = {"q": query, "maxResults": max_results}
+    if api_key:
+        params["key"] = api_key
 
-    response = requests.get(base_url, params=params)
+    try:
+        resp = requests.get(base_url, params=params, timeout=10)
+        resp.raise_for_status()
+    except requests.RequestException as e:
+        return {"error": f"Erro na requisição: {e}"}
 
-    if response.status_code != 200:
-        return {"error": f"Erro na requisição: {response.status_code}"}
-
-    data = response.json()
-
+    data = resp.json()
+    items = data.get("items", [])
     books = []
-    for item in data.get("items", []):
-        volume_info = item.get("volumeInfo", {})
+    for item in items:
+        vi = item.get("volumeInfo", {})
+        image_links = vi.get("imageLinks") or {}
         books.append({
             "id": item.get("id"),
-            "title": volume_info.get("title"),
-            "authors": volume_info.get("authors", []),
-            "publishedDate": volume_info.get("publishedDate"),
-            "description": volume_info.get("description"),
-            "thumbnail": volume_info.get("imageLinks", {}).get("thumbnail")
+            "title": vi.get("title"),
+            "authors": vi.get("authors", []),
+            "publisher": vi.get("publisher"), 
+            "publishedDate": vi.get("publishedDate"),
+            "description": vi.get("description"),
+            "thumbnail": image_links.get("thumbnail")
         })
     return books
