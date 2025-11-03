@@ -1,7 +1,7 @@
 import requests
 from flask import current_app
 
-def search_books(query, max_results=10):
+def search_books(query, max_results=25):
     """Busca livros usando a API do Google Books."""
     api_key = current_app.config.get("GOOGLE_BOOKS_API_KEY")
     base_url = "https://www.googleapis.com/books/v1/volumes"
@@ -25,9 +25,10 @@ def search_books(query, max_results=10):
         books.append({
             "id": item.get("id"),
             "title": volume_info.get("title"),
-            "authors": volume_info.get("authors", []),
+            "authors": "Sem informações de autor" if ', '.join(volume_info.get("authors", [])) == "" else ', '.join(volume_info.get("authors", [])),
             "publishedDate": volume_info.get("publishedDate"),
             "description": volume_info.get("description"),
-            "thumbnail": volume_info.get("imageLinks", {}).get("thumbnail")
+            "thumbnail": volume_info.get("imageLinks", {}).get("thumbnail"),
+            "in_shelf": False
         })
     return books
