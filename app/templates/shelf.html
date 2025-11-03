@@ -15,41 +15,38 @@
             <h4 class="text-bold text-white">Book Nook</h4>
         </div>
         <div class="d-flex align-items-center gap-2">
-            <a href="/search" class="btn btn-light">Search</a>
+            <a href="/search" class="btn btn-outline-light">Search</a>
             <a class="btn btn-light">Shelf</a>
-            <a class="btn btn-light">Profile</a>
+            <a class="btn btn-outline-light">Profile</a>
         </div>
     </div>
     <div class="col-md-12 d-flex justify-content-between px-5 py-3 app-bg border-top">
         <h3 class="text-white text-bold">My Shelf</h3>
-        <input 
-  type="text" 
-  class="form-control w-25" 
-  placeholder="Search in my books" 
-  id="searchInput">
+        <input type="text" class="form-control w-25" placeholder="Search in my books" id="searchInput">
     </div>
-        <div class="col-md-12 px-5">
-            {% if results %}
-                {% for book in results %}
-                    <form action="{{ url_for('Index.remove_book') }}" method="POST">
+    <div class="col-md-12 px-5">
+        {% if results %}
+            {% for book in results %}
+                <form action="{{ url_for('Index.remove_book') }}" method="POST" class="book-item">
 
-                        <input type="hidden" name="google_book_id" value="{{book.google_book_id}}">
-                        <div class="card col-md-12 d-flex gap-2 flex-row align-items-center my-3 py-3 bg-light hover">
-                            <img style="width: 150px;height: 150px;object-fit:contain;border-radius: 5px;" src="{{ book.thumbnail }}">
-                            <div class="d-flex flex-column gap-2">
-                                <h3>{{ book.title }}</h3>
-                                <p>{{book.authors}}</p>
-                                <p>{{book.publishedDate}}</p>
-                            </div>
-                            <button type="submit" class="btn btn-danger ms-auto me-3">
-                                Remove from Shelf
-                            </button>
+                    <input type="hidden" name="google_book_id" value="{{book.google_book_id}}">
+                    <div class="card col-md-12 d-flex gap-2 flex-row align-items-center my-3 py-3 bg-light hover">
+                        <img style="width: 150px;height: 150px;object-fit:contain;border-radius: 5px;" src="{{ book.thumbnail }}">
+                        <div class="d-flex flex-column gap-2">
+                            <h3>{{ book.title }}</h3>
+                            <p>{{book.authors}}</p>
+                            <p>{{book.publishedDate}}</p>
                         </div>
-                    </form>
-                {% endfor %}
-            {% else %}
-                <p>Nenhum resultado encontrado.</p>
-            {% endif %}
-        </div>
+                        <button type="submit" class="btn btn-danger ms-auto me-3">
+                            Remove from Shelf
+                        </button>
+                    </div>
+                </form>
+            {% endfor %}
+        {% else %}
+            <p>Nenhum resultado encontrado.</p>
+        {% endif %}
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
