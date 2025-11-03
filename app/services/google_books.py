@@ -6,22 +6,22 @@ def search_books(query, max_results=25):
     api_key = current_app.config.get("GOOGLE_BOOKS_API_KEY")
     base_url = "https://www.googleapis.com/books/v1/volumes"
 
-    params = {"q": query, "maxResults": max_results}
-    if api_key:
-        params["key"] = api_key
+    params = {
+        "q": query,
+        "maxResults": max_results,
+        "key": api_key
+    }
 
-    try:
-        resp = requests.get(base_url, params=params, timeout=10)
-        resp.raise_for_status()
-    except requests.RequestException as e:
-        return {"error": f"Erro na requisição: {e}"}
+    response = requests.get(base_url, params=params)
 
-    data = resp.json()
-    items = data.get("items", [])
+    if response.status_code != 200:
+        return {"error": f"Erro na requisição: {response.status_code}"}
+
+    data = response.json()
+
     books = []
-    for item in items:
-        vi = item.get("volumeInfo", {})
-        image_links = vi.get("imageLinks") or {}
+    for item in data.get("items", []):
+        volume_info = item.get("volumeInfo", {})
         books.append({
             "id": item.get("id"),
             "title": volume_info.get("title"),
