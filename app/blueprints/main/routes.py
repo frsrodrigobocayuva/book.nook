@@ -61,7 +61,7 @@ def add_book():
             db.session.commit()
             flash('Livro adicionado com sucesso!', 'success')
         
-        return redirect(url_for('Index.index'))
+        return redirect(request.referrer or url_for('Index.search'))
     
 @index_bp.route('/remove_book', methods=['POST'])
 def remove_book():
