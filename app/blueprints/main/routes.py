@@ -65,10 +65,8 @@ def add_book():
     
 @index_bp.route('/remove_book', methods=['POST'])
 def remove_book():
-    # Pega o ID do livro do formulário
     book_id_to_remove = request.form.get('google_book_id')
     
-    # Encontra o livro na estante do usuário atual
     book_in_shelf = Livro.query.filter_by(
         google_book_id=book_id_to_remove
     ).first()
@@ -83,7 +81,5 @@ def remove_book():
             flash(f'Erro ao remover o livro: {e}', 'danger')
     else:
         flash('Livro não encontrado na sua estante.', 'warning')
-    
-    # Redireciona o usuário de volta para a página de onde ele veio
-    # (ou para a página de busca, se preferir)
+
     return redirect(request.referrer or url_for('Index.search'))
