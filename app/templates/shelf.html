@@ -16,65 +16,34 @@
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="/search" class="btn btn-light">Search</a>
-            <a href="/" class="btn btn-light">Shelf</a>
+            <a class="btn btn-light">Shelf</a>
             <a class="btn btn-light">Profile</a>
         </div>
     </div>
     <div class="col-md-12 d-flex justify-content-between px-5 py-3 app-bg border-top">
-        <h3 class="text-white text-bold">Search</h3>
+        <h3 class="text-white text-bold">My Shelf</h3>
+        <input 
+  type="text" 
+  class="form-control w-25" 
+  placeholder="Search in my books" 
+  id="searchInput">
     </div>
     <div class="col-md-12 px-5">
-        <input type="text" class="form-control w-100 mx-auto my-3" placeholder="Search for books, authors, or genres" id="searchInput">
         {% if results %}
             {% for book in results %}
-            
-            <form action="{{ url_for('Index.add_book') }}" method="POST">
-                
-                <input type="hidden" name="title" value="{{ book.title }}">
-                <input type="hidden" name="authors" value="{{ book.authors }}">
-                <input type="hidden" name="publishedDate" value="{{ book.publishedDate }}">
-                <input type="hidden" name="thumbnail" value="{{ book.thumbnail }}">
-                <input type="hidden" name="google_book_id" value="{{book.id}}">
-                
-                <div class="card col-md-12 d-flex gap-2 flex-row align-items-center my-3 py-3 bg-light hover">
-                    
-                    <img style="width: 150px;height: 150px;object-fit:contain;border-radius: 5px;" src="{{ book.thumbnail }}">
-                    
-                    <div class="d-flex flex-column gap-2">
-                        <h3>{{ book.title }}</h3>
-                        <p>{{ book.authors }}</p>
-                        <p>{{ book.publishedDate }}</p>
-                    </div>
-
-                    {% if book.in_shelf %}
-                        <button type="submit" class="btn btn-danger ms-auto me-3" formaction="{{ url_for('Index.remove_book') }}">
-                            Remove from Shelf
-                        </button>
-                    {% else %}
-                        <button type="submit" class="btn btn-success ms-auto me-3">
-                            Add to Shelf
-                        </button>
-                    {% endif %}
+            <div class="card col-md-12 d-flex gap-2 flex-row align-items-center my-3 py-3 bg-light hover">
+                <img style="width: 150px;height: 150px;object-fit:contain;border-radius: 5px;" src="{{ book.thumbnail }}">
+                <div class="d-flex flex-column gap-2">
+                    <h3>{{ book.title }}</h3>
+                    <p>{{book.authors}}</p>
+                    <p>{{book.publishedDate}}</p>
                 </div>
-
-            </form> {% endfor %}
+            </div>
+                
+            {% endfor %}
         {% else %}
             <p>Nenhum resultado encontrado.</p>
         {% endif %}
     </div>
-    <script>
-  const input = document.getElementById('searchInput');
-
-  input.addEventListener('change', () => { // ou 'input' se quiser atualizar enquanto digita
-    const query = input.value.trim();
-    const baseUrl = window.location.origin + window.location.pathname;
-    const newUrl = query ? `${baseUrl}?q=${encodeURIComponent(query)}` : baseUrl;
-
-    // Redireciona e recarrega a página Flask com o novo parâmetro q
-    window.location.href = newUrl;
-  });
-</script>
 </body>
-
-
 </html>
