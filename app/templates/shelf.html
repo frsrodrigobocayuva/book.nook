@@ -1,3 +1,32 @@
+{% extends "base.html" %}
+{% set active_page = 'shelf' %}
+
+{% block title %}Book Nook{% endblock %}
+{% block header_title %}My Shelf{% endblock %}
+{% block header_tools %}
+<input type="text" class="form-control w-25" placeholder="Search in my books" id="searchInput">
+{% endblock %}
+
+{% block content %}
+{% if results %}
+    {% for book in results %}
+        <form action="{{ url_for('Index.remove_book') }}" method="POST">
+            <input type="hidden" name="google_book_id" value="{{book.google_book_id}}">
+            <div class="card col-md-12 d-flex gap-2 flex-row align-items-center my-3 py-3 bg-light hover">
+                <img style="width: 150px;height: 150px;object-fit:contain;border-radius: 5px;" src="{{ book.thumbnail }}">
+                <div class="d-flex flex-column gap-2">
+                    <h3>{{ book.title }}</h3>
+                    <p>{{ book.authors }}</p>
+                    <p>{{ book.publishedDate }}</p>
+                </div>
+                <button type="submit" class="btn btn-danger ms-auto me-3">Remove from Shelf</button>
+            </div>
+        </form>
+    {% endfor %}
+{% else %}
+    <p>Nenhum resultado encontrado.</p>
+{% endif %}
+{% endblock %}
 <!DOCTYPE html>
 <html lang="en">
 <head>

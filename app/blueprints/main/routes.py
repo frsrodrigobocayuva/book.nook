@@ -1,16 +1,19 @@
 from flask import Blueprint, render_template, request, Response, redirect, url_for, jsonify, flash
 from app.services.google_books import search_books
 from app.models import Livro, db
+from flask_login import login_user, logout_user, login_required, current_user
 
 index_bp = Blueprint('Index', __name__)
 
 @index_bp.route('/')
+@login_required
 def index():
     all_books = Livro.query.order_by(Livro.title).all()
 
-    return render_template('shelf.html', results = all_books)
+    return render_template('shelf.html', results = all_books, user=current_user)
 
 @index_bp.route("/search")
+@login_required
 def search():
     query = request.args.get("q")
     if not query:
@@ -32,9 +35,10 @@ def search():
             book_data['in_shelf'] = book_data['id'] in shelf_ids
             processed_results.append(book_data)
 
-    return render_template('index.html', results=processed_results)
+    return render_template('index.html', results=processed_results, user=current_user)
 
 @index_bp.route('/add', methods=['POST'])
+@login_required
 def add_book():
     if request.method == 'POST':
         google_book_id = request.form['google_book_id']
@@ -64,6 +68,7 @@ def add_book():
         return redirect(request.referrer or url_for('Index.search'))
     
 @index_bp.route('/remove_book', methods=['POST'])
+@login_required
 def remove_book():
     book_id_to_remove = request.form.get('google_book_id')
     

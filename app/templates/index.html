@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% set active_page = 'index' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,17 +49,54 @@
                         <p>{{ book.publishedDate }}</p>
                     </div>
 
-                    {% if book.in_shelf %}
-                        <button type="submit" class="btn btn-danger ms-auto me-3" formaction="{{ url_for('Index.remove_book') }}">
-                            Remove from Shelf
-                        </button>
-                    {% else %}
-                        <button type="submit" class="btn btn-success ms-auto me-3">
-                            Add to Shelf
-                        </button>
-                    {% endif %}
-                </div>
+{% block title %}Book Nook{% endblock %}
+{% block header_title %}Search{% endblock %}
 
+{% block content %}
+<input type="text" class="form-control w-100 mx-auto my-3" placeholder="Search for books, authors, or genres" id="searchInput">
+
+{% if results %}
+    {% for book in results %}
+        <form action="{{ url_for('Index.add_book') }}" method="POST">
+            <input type="hidden" name="title" value="{{ book.title }}">
+            <input type="hidden" name="authors" value="{{ book.authors }}">
+            <input type="hidden" name="publishedDate" value="{{ book.publishedDate }}">
+            <input type="hidden" name="thumbnail" value="{{ book.thumbnail }}">
+            <input type="hidden" name="google_book_id" value="{{book.id}}">
+
+            <div class="card col-md-12 d-flex gap-2 flex-row align-items-center my-3 py-3 bg-light hover">
+                <img style="width: 150px;height: 150px;object-fit:contain;border-radius: 5px;" src="{{ book.thumbnail }}">
+                <div class="d-flex flex-column gap-2">
+                    <h3>{{ book.title }}</h3>
+                    <p>{{ book.authors }}</p>
+                    <p>{{ book.publishedDate }}</p>
+                </div>
+                {% if book.in_shelf %}
+                    <button type="submit" class="btn btn-danger ms-auto me-3" formaction="{{ url_for('Index.remove_book') }}">
+                        Remove from Shelf
+                    </button>
+                {% else %}
+                    <button type="submit" class="btn btn-success ms-auto me-3">Add to Shelf</button>
+                {% endif %}
+            </div>
+        </form>
+    {% endfor %}
+{% else %}
+    <p>Nenhum resultado encontrado.</p>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const input = document.getElementById('searchInput');
+  input.addEventListener('change', () => {
+    const query = input.value.trim();
+    const baseUrl = window.location.origin + window.location.pathname;
+    const newUrl = query ? `${baseUrl}?q=${encodeURIComponent(query)}` : baseUrl;
+    window.location.href = newUrl;
+  });
+</script>
+{% endblock %}
             </form> {% endfor %}
         {% else %}
             <p>Nenhum resultado encontrado.</p>
