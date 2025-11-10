@@ -27,7 +27,7 @@ def login():
         if user and user.check_password(password):
             flash("Logged in successfully! 🎉", category="success")
             login_user(user, remember=True)
-            return redirect(url_for('main.index'))
+            return redirect(url_for('Index.index'))
         else:
             flash("Invalid email or password. Please try again.", category="error")
 
