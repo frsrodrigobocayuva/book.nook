@@ -33,9 +33,10 @@ class Livro(db.Model):
     __tablename__ = 'livros'
     # Atributos que serão mapeados para colunas da tabela.
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     title = db.Column(db.String(80), nullable=False)
     authors = db.Column(db.String(120), nullable=False)
     publishedDate = db.Column(db.String(120), default=False)
     description = db.Column(db.String(8000), default=False)
     thumbnail = db.Column(db.String(4000), default=False)
-    google_book_id = db.Column(db.String(50), unique=True, nullable=False)
+    google_book_id = db.Column(db.String(50), nullable=False)

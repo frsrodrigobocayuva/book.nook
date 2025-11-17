@@ -8,9 +8,10 @@ index_bp = Blueprint('Index', __name__)
 @index_bp.route('/')
 @login_required
 def index():
-    all_books = Livro.query.order_by(Livro.title).all()
+    #all_books = Livro.query.order_by(Livro.title).all()
+    user_books = Livro.query.filter_by(user_id=current_user.id).order_by(Livro.title).all()
 
-    return render_template('shelf.html', results = all_books, user=current_user)
+    return render_template('shelf.html', results = user_books, user=current_user)
 
 @index_bp.route("/search")
 @login_required
@@ -26,7 +27,7 @@ def search():
 
     api_book_ids = [book['id'] for book in api_results if 'id' in book]
 
-    existing_books = Livro.query.filter(Livro.google_book_id.in_(api_book_ids)).all()
+    existing_books = Livro.query.filter(Livro.google_book_id.in_(api_book_ids), Livro.user_id == current_user.id).all()
     shelf_ids = {book.google_book_id for book in existing_books}
 
     processed_results = []
@@ -43,7 +44,7 @@ def add_book():
     if request.method == 'POST':
         google_book_id = request.form['google_book_id']
 
-        existing_book = Livro.query.filter_by(google_book_id=google_book_id).first()
+        existing_book = Livro.query.filter_by(google_book_id=google_book_id, user_id=current_user.id).first()
 
         if existing_book:
             flash('Este livro já está na sua estante!', 'warning')
@@ -58,7 +59,8 @@ def add_book():
                 title=title,
                 authors=authors,
                 publishedDate=publishedDate,
-                thumbnail=thumbnail
+                thumbnail=thumbnail,
+                user_id=current_user.id
             )
 
             db.session.add(new_book)
@@ -73,7 +75,7 @@ def remove_book():
     book_id_to_remove = request.form.get('google_book_id')
     
     book_in_shelf = Livro.query.filter_by(
-        google_book_id=book_id_to_remove
+        google_book_id=book_id_to_remove, user_id=current_user.id
     ).first()
     
     if book_in_shelf:
