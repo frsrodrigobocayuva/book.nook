@@ -1,4 +1,10 @@
-document.querySelectorAll("button").forEach((link) => {
+document.querySelectorAll("button:not(.btn-close)").forEach((link) => {
+    link.addEventListener("click", () => {
+        document.getElementById("preloader").style.display = "grid";
+    });
+});
+
+document.querySelectorAll(".card.hover").forEach((link) => {
     link.addEventListener("click", () => {
         document.getElementById("preloader").style.display = "grid";
     });
@@ -7,8 +13,8 @@ document.querySelectorAll("button").forEach((link) => {
 const input = document.getElementById('searchInput');
 
 input.addEventListener('change', () => {
-document.getElementById("preloader").style.display = "grid";    
-const query = input.value.trim();
+    document.getElementById("preloader").style.display = "grid";    
+    const query = input.value.trim();
     const baseUrl = window.location.origin + window.location.pathname;
     const newUrl = query ? `${baseUrl}?q=${encodeURIComponent(query)}` : baseUrl;
     window.location.href = newUrl;

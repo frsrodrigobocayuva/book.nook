@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% set active_page = 'search' %}
+
+{% block title %}{{ book.title }}{% endblock %}
+{% block header_title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row d-flex">
+        
+        <!-- Imagem grande -->
+        <div class="col-md-4 d-flex justify-content-center">
+            <img src="{{ book.thumbnail }}" style="width: 100%; max-width: 350px; object-fit: contain; border-radius: 8px;">
+        </div>
+
+        <!-- Infos do livro -->
+        <div class="col-md-8">
+            <a href="{{ request.referrer or url_for('Index.search') }}" class="btn btn-outline-dark">
+                ← Voltar
+            </a>
+            <h1 class="my-3">{{ book.title }}</h1>
+            <h4 class="text-muted">{{ book.authors }}</h4>
+            <p><strong>Publicação:</strong> {{ book.publishedDate }}</p>
+            
+            {% if book.description %}
+                <p class="mt-3">{{ book.description }}</p>
+            {% endif %}
+
+            <form action="{{ url_for('Index.add_book') }}" method="POST" class="mt-4">
+                <input type="hidden" name="title" value="{{ book.title }}">
+                <input type="hidden" name="authors" value="{{ book.authors }}">
+                <input type="hidden" name="publishedDate" value="{{ book.publishedDate }}">
+                <input type="hidden" name="thumbnail" value="{{ book.thumbnail }}">
+                <input type="hidden" name="google_book_id" value="{{ book.id }}">
+
+                {% if book.in_shelf %}
+                    <button type="submit" class="btn btn-danger" 
+                            formaction="{{ url_for('Index.remove_book') }}">
+                        Remove from Shelf
+                    </button>
+                {% else %}
+                    <button type="submit" class="btn btn-success">Add to Shelf</button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -15,7 +15,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(128), nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
-
+    bio = db.Column(db.Text)
     def set_password(self, password):
         """Gera o hash da senha e armazena no campo password_hash."""
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')

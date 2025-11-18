@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, Response, redirect, url_for, jsonify, flash
-from app.services.google_books import search_books
-from app.models import Livro, db
+from app.services.google_books import search_books, get_book_by_google_id
+from app.models import Livro, db, User
 from flask_login import login_user, logout_user, login_required, current_user
 
 index_bp = Blueprint('Index', __name__)
@@ -35,7 +35,7 @@ def search():
             book_data['in_shelf'] = book_data['id'] in shelf_ids
             processed_results.append(book_data)
 
-    return render_template('index.html', results=processed_results, user=current_user)
+    return render_template('index.html', results=processed_results, user=current_user, active_page = "search")
 
 @index_bp.route('/add', methods=['POST'])
 @login_required
@@ -88,3 +88,55 @@ def remove_book():
         flash('Livro não encontrado na sua estante.', 'warning')
 
     return redirect(request.referrer or url_for('Index.search'))
+
+@index_bp.route('/book/<google_book_id>')
+def book_detail(google_book_id):
+    book = get_book_by_google_id(google_book_id)
+
+    # Verifica se está na shelf
+    saved_book = Livro.query.filter_by(google_book_id=google_book_id).first()
+
+    book["in_shelf"] = saved_book is not None
+
+    return render_template("ver.html", book=book)
+
+@index_bp.route('/user/<int:user_id>/edit', methods=['GET', 'POST'])
+def user_edit(user_id):
+    user = User.query.get_or_404(user_id)
+
+    if request.method == 'POST':
+        # Leitura dos campos do form
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip()
+        bio = request.form.get('bio', '').strip()
+
+        # Validações simples — adapte conforme necessidade
+        errors = []
+        if not name:
+            errors.append("Nome é obrigatório.")
+        if not email:
+            errors.append("E-mail é obrigatório.")
+
+        if email and '@' not in email:
+            errors.append("Formato de e-mail inválido.")
+
+        if errors:
+            for e in errors:
+                flash(e, 'error')
+            return render_template('user_edit.html', user=user, flash_messages={'error': errors})
+
+        user.name = name
+        user.email = email
+        user.bio = bio if bio else None
+
+        try:
+            db.session.commit()
+            flash("Dados atualizados com sucesso.", "success")
+            return redirect(url_for('Index.user_edit', user_id=user.id))
+        except Exception as ex:
+            db.session.rollback()
+            flash("Ocorreu um erro ao salvar. Tente novamente.", "error")
+            return render_template('user_edit.html', user=user, flash_messages={'error': ["Erro ao salvar."]})
+
+    # GET -> renderiza o form com dados do usuário
+    return render_template('user_edit.html', user=user)
