@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 item.style.display = '';
                 console.log(true)
             } else {
-                item.style.display = 'none !important';
+                item.style.setProperty('display', 'none', 'important');
             }
         });
     });
