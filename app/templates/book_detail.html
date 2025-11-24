@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }}{% endblock %}
+{% block header_title %}{{ book.title }}{% endblock %}
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        
+        <div class="col-md-4 text-center">
+            <img src="{{ book.thumbnail }}" class="img-fluid shadow rounded" style="max-height: 450px;">
+        </div>
+
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold">{{ book.title }}</h1>
+            <h4 class="text-muted mb-3">{{ book.authors }}</h4>
+            <p><strong>Publicação:</strong> {{ book.publishedDate }}</p>
+            
+            {% if book.description %}
+                <div class="mb-4 text-justify">
+                    {{ book.description }}
+                </div>
+            {% endif %}
+
+            <hr>
+
+            {% if book.in_shelf %}
+                <div class="card p-4">
+                    <h4 class="mb-3">Progresso de Leitura</h4>
+                    
+                    <form action="{{ url_for('Index.update_progress') }}" method="POST">
+                        <input type="hidden" name="google_book_id" value="{{ book.id }}">
+                        
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <label for="rangeProgress" class="form-label">Deslize para ajustar</label>
+                                <input type="range" class="form-range" 
+                                       min="0" 
+                                       max="{{ book.page_count or 500 }}" 
+                                       value="{{ book.current_page }}" 
+                                       id="rangeProgress" 
+                                       oninput="syncInputs(this.value)">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="numberProgress" class="form-label">Página Atual</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" 
+                                           name="current_page" 
+                                           min="0" 
+                                           max="{{ book.page_count or 500 }}" 
+                                           value="{{ book.current_page }}" 
+                                           id="numberProgress"
+                                           oninput="syncInputs(this.value)">
+                                    <span class="input-group-text">/ {{ book.page_count or '?' }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 d-flex justify-content-between align-items-center">
+                            <div class="progress flex-grow-1 me-3" style="height: 10px;">
+                                {% set pct = 0 %}
+                                {% if book.page_count and book.page_count > 0 %}
+                                    {% set pct = (book.current_page / book.page_count) * 100 %}
+                                {% endif %}
+                                <div class="progress-bar bg-success" id="progressBarVisual" role="progressbar" style="width: {{ pct }}%"></div>
+                            </div>
+                            <button type="submit" class="btn btn-success">Salvar Progresso</button>
+                        </div>
+                    </form>
+                    
+                    <form action="{{ url_for('Index.remove_book') }}" method="POST" class="mt-3 text-end">
+                        <input type="hidden" name="google_book_id" value="{{ book.id }}">
+                        <button type="submit" class="btn btn-link text-danger btn-sm">Remover da Estante</button>
+                    </form>
+                </div>
+
+            {% else %}
+                <div class="alert alert-info">
+                    Gostou deste livro? Adicione à sua estante para acompanhar seu progresso.
+                </div>
+                <form action="{{ url_for('Index.add_book') }}" method="POST">
+                    <input type="hidden" name="title" value="{{ book.title }}">
+                    <input type="hidden" name="authors" value="{{ book.authors }}">
+                    <input type="hidden" name="publishedDate" value="{{ book.publishedDate }}">
+                    <input type="hidden" name="thumbnail" value="{{ book.thumbnail }}">
+                    <input type="hidden" name="google_book_id" value="{{ book.id }}">
+                    <input type="hidden" name="page_count" value="{{ book.pageCount }}">
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        Adicionar à Estante
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function syncInputs(val) {
+        document.getElementById('rangeProgress').value = val;
+        document.getElementById('numberProgress').value = val;
+        
+        var max = document.getElementById('rangeProgress').max;
+        if(max > 0) {
+            var pct = (val / max) * 100;
+            document.getElementById('progressBarVisual').style.width = pct + '%';
+        }
+    }
+</script>
+{% endblock %}
