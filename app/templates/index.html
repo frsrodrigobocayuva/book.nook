@@ -16,6 +16,7 @@
                 <input type="hidden" name="publishedDate" value="{{ book.publishedDate }}">
                 <input type="hidden" name="thumbnail" value="{{ book.thumbnail }}">
                 <input type="hidden" name="google_book_id" value="{{book.id}}">
+                <input type="hidden" name="page_count" value="{{ book.pageCount }}">
                 <a href="{{ url_for('Index.book_detail', google_book_id=book.id) }}" class="text-decoration-none text-dark">
                     <div class="card col-md-12 d-flex gap-2 flex-row align-items-center my-3 py-3 bg-light hover px-3">
                         

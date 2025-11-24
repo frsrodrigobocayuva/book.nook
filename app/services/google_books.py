@@ -29,6 +29,7 @@ def search_books(query, max_results=25) -> list:
             "publishedDate": volume_info.get("publishedDate"),
             "description": volume_info.get("description"),
             "thumbnail": volume_info.get("imageLinks", {}).get("thumbnail"),
+            "pageCount": volume_info.get("pageCount", 100), 
             "in_shelf": False
         })
     return books
@@ -57,6 +58,7 @@ def get_book_by_google_id(google_book_id) -> dict | None:
         "publishedDate": volume_info.get("publishedDate"),
         "description": volume_info.get("description"),
         "thumbnail": volume_info.get("imageLinks", {}).get("thumbnail"),
+        "pageCount": volume_info.get("pageCount", 100),
         "in_shelf": False
     }
 

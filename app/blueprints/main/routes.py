@@ -8,10 +8,10 @@ index_bp = Blueprint('Index', __name__)
 @index_bp.route('/')
 @login_required
 def index():
-    #all_books = Livro.query.order_by(Livro.title).all()
     user_books = Livro.query.filter_by(user_id=current_user.id).order_by(Livro.title).all()
 
     return render_template('shelf.html', results = user_books, user=current_user)
+
 
 @index_bp.route("/search")
 @login_required
@@ -38,12 +38,12 @@ def search():
 
     return render_template('index.html', results=processed_results, user=current_user, active_page = "search")
 
+
 @index_bp.route('/add', methods=['POST'])
 @login_required
 def add_book():
     if request.method == 'POST':
         google_book_id = request.form['google_book_id']
-
         existing_book = Livro.query.filter_by(google_book_id=google_book_id, user_id=current_user.id).first()
 
         if existing_book:
@@ -53,6 +53,7 @@ def add_book():
             authors = request.form['authors']
             publishedDate = request.form['publishedDate']
             thumbnail = request.form['thumbnail']
+            page_count = request.form.get('page_count', 0)
 
             new_book = Livro(
                 google_book_id=google_book_id, 
@@ -60,6 +61,7 @@ def add_book():
                 authors=authors,
                 publishedDate=publishedDate,
                 thumbnail=thumbnail,
+                page_count=page_count,
                 user_id=current_user.id
             )
 
@@ -68,6 +70,55 @@ def add_book():
             flash('Livro adicionado com sucesso!', 'success')
         
         return redirect(request.referrer or url_for('Index.search'))
+
+@index_bp.route('/book/<google_book_id>')
+@login_required
+def book_detail(google_book_id):
+    saved_book = Livro.query.filter_by(google_book_id=google_book_id, user_id=current_user.id).first()
+
+    book_data = {}
+
+    if saved_book:
+        book_data = {
+            'id': saved_book.google_book_id,
+            'title': saved_book.title,
+            'authors': saved_book.authors,
+            'publishedDate': saved_book.publishedDate,
+            'thumbnail': saved_book.thumbnail,
+            'page_count': saved_book.page_count,
+            'current_page': saved_book.current_page,
+            'in_shelf': True
+        }
+
+        api_data = get_book_by_google_id(google_book_id)
+        book_data['description'] = api_data.get('description', '')
+        
+    else:
+        book_data = get_book_by_google_id(google_book_id)
+        book_data['in_shelf'] = False
+        book_data['current_page'] = 0
+        if 'pageCount' not in book_data:
+            book_data['pageCount'] = 0
+
+    return render_template("book_detail.html", book=book_data)
+
+@index_bp.route('/update_progress', methods=['POST'])
+@login_required
+def update_progress():
+    google_book_id = request.form.get('google_book_id')
+    new_page = request.form.get('current_page')
+
+    book = Livro.query.filter_by(google_book_id=google_book_id, user_id=current_user.id).first()
+    
+    if book and new_page:
+        book.current_page = int(new_page)
+        if book.page_count and book.current_page > book.page_count:
+            book.current_page = book.page_count
+            
+        db.session.commit()
+        flash('Progresso atualizado!', 'success')
+    
+    return redirect(url_for('Index.book_detail', google_book_id=google_book_id))
     
 @index_bp.route('/remove_book', methods=['POST'])
 @login_required
@@ -91,28 +142,15 @@ def remove_book():
 
     return redirect(request.referrer or url_for('Index.search'))
 
-@index_bp.route('/book/<google_book_id>')
-def book_detail(google_book_id):
-    book = get_book_by_google_id(google_book_id)
-
-    # Verifica se está na shelf
-    saved_book = Livro.query.filter_by(google_book_id=google_book_id).first()
-
-    book["in_shelf"] = saved_book is not None
-
-    return render_template("ver.html", book=book)
-
 @index_bp.route('/user/<int:user_id>/edit', methods=['GET', 'POST'])
 def user_edit(user_id):
     user = User.query.get_or_404(user_id)
 
     if request.method == 'POST':
-        # Leitura dos campos do form
         name = request.form.get('name', '').strip()
         email = request.form.get('email', '').strip()
         bio = request.form.get('bio', '').strip()
 
-        # Validações simples — adapte conforme necessidade
         errors = []
         if not name:
             errors.append("Nome é obrigatório.")
@@ -140,5 +178,4 @@ def user_edit(user_id):
             flash("Ocorreu um erro ao salvar. Tente novamente.", "error")
             return render_template('user_edit.html', user=user, flash_messages={'error': ["Erro ao salvar."]})
 
-    # GET -> renderiza o form com dados do usuário
     return render_template('user_edit.html', user=user)

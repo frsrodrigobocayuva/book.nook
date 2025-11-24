@@ -28,10 +28,12 @@ document.addEventListener('DOMContentLoaded', function() {
         bookItems.forEach(function(item) {
             const title = item.querySelector('h3').textContent.toLowerCase();
             const author = item.querySelector('p').textContent.toLowerCase();
+            
             if (title.includes(filter) || author.includes(filter)) {
                 item.style.display = '';
+                console.log(true)
             } else {
-                item.style.display = 'none';
+                item.style.display = 'none !important';
             }
         });
     });

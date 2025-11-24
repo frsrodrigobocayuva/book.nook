@@ -29,9 +29,7 @@ class User(db.Model, UserMixin):
 
 
 class Livro(db.Model):
-    # __tablename__ define o nome da tabela no banco de dados.
     __tablename__ = 'livros'
-    # Atributos que serão mapeados para colunas da tabela.
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     title = db.Column(db.String(80), nullable=False)
@@ -40,3 +38,5 @@ class Livro(db.Model):
     description = db.Column(db.String(8000), default=False)
     thumbnail = db.Column(db.String(4000), default=False)
     google_book_id = db.Column(db.String(50), nullable=False)
+    page_count = db.Column(db.Integer, default=0)
+    current_page = db.Column(db.Integer, default=0)
