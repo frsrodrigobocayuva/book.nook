@@ -1,158 +1,65 @@
-# Book.Nook
+# Book.Nook 📚
 
-**Book.Nook** é uma aplicação web desenvolvida em Python com o framework **Flask**, criada para auxiliar amantes da leitura a organizarem e acompanharem seu progresso literário de forma prática, intuitiva e visualmente agradável.
+**Book.Nook** é uma aplicação web "Full Stack" para gestão de bibliotecas pessoais. O sistema consome a API do Google Books para permitir que utilizadores pesquisem obras, organizem estantes virtuais e acompanhem o progresso de leitura em tempo real.
 
----
+![Status do Projeto](https://img.shields.io/badge/Status-Concluído-success)
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![Flask](https://img.shields.io/badge/Framework-Flask-green)
 
-## Visão Geral
+## 📸 Demonstração
+<img width="1680" height="995" alt="image" src="https://github.com/user-attachments/assets/28b9fc0e-e079-4c1a-b369-e8a31dfd7593" />
 
-O objetivo do projeto é proporcionar uma plataforma web onde leitores possam:
+## 🚀 Funcionalidades Técnicas
 
-* Gerenciar seus livros e estantes;
-* Acompanhar o progresso de leitura por livro;
-* Avaliar e catalogar leituras;
-* Personalizar informações do próprio perfil.
+* **Integração de API Externa:** Consumo da Google Books API para busca e recuperação de metadados de livros (títulos, autores, capas, contagem de páginas).
+* **Autenticação Robusta:** Sistema completo de Login/Registo utilizando `Flask-Login` e hash de senhas com `Bcrypt`.
+* **Gestão de Estado:** Acompanhamento de progresso de leitura (página atual vs. total) com feedback visual (barras de progresso).
+* **CRUD Completo:** Criação, leitura, atualização e remoção de livros na estante pessoal do utilizador.
+* **Validações de Segurança:** Validação de inputs no Back-end (Regex para senhas fortes e emails) e proteção contra CSRF via `Flask-WTF`.
 
-A interface prioriza usabilidade e responsividade para dispositivos móveis e desktop.
+## 🛠️ Stack Tecnológico
 
----
+O projeto foi construído utilizando a arquitetura **MVC (Model-View-Controller)**:
 
-## Funcionalidades (Casos de Uso)
+* **Backend:** Python 3, Flask (Blueprints & Application Factory Pattern).
+* **Base de Dados:** SQLite com SQLAlchemy (ORM).
+* **Frontend:** Bootstrap 5, Jinja2 Templates, CSS3 Personalizado (Glassmorphism UI).
+* **Serviços:** `requests` para chamadas HTTP externas.
 
-1. **Login / Logout** — autenticação de usuários com senhas protegidas.
-2. **Pesquisar por um livro** — busca simples por título/autor.
-3. **Adicionar à estante** — salvar livros na estante do usuário.
-4. **Marcar progresso de leitura** — atualizar páginas lidas / porcentagem.
-5. **Avaliar o livro** — deixar notas e comentários.
-6. **Editar perfil** — atualizar dados do usuário.
+## ⚙️ Como Executar Localmente
 
----
+1.  **Clone o repositório:**
+    ```bash
+    git clone [https://github.com/frsrodrigobocayuva/book.nook.git](https://github.com/frsrodrigobocayuva/book.nook.git)
+    cd book.nook
+    ```
 
-## Tecnologias Utilizadas
+2.  **Configure o Ambiente Virtual:**
+    ```bash
+    python -m venv venv
+    # Windows
+    venv\Scripts\activate
+    # Linux/Mac
+    source venv/bin/activate
+    ```
 
-* **Linguagem:** Python
-* **Framework:** Flask
-* **Banco de dados:** SQLite (SQLAlchemy como ORM)
-* **Autenticação / Segurança:** Flask-Bcrypt
-* **Formulários:** Flask-WTF
-* **Migrações:** Flask-Migrate / Alembic
-* **Depuração:** Flask-DebugToolbar
-* **Testes:** Pytest
-* **Configuração:** Python-dotenv
-* **Controle de versão:** Git + GitHub
-* **Gestão Ágil:** Trello
+3.  **Instale as dependências:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
----
+4.  **Configure as Variáveis de Ambiente:**
+    Crie um ficheiro `.env` na raiz do projeto e adicione a sua chave (necessária para a busca de livros):
+    ```env
+    GOOGLE_BOOKS_API_KEY="Sua_Chave_da_Google_API_Aqui"
+    SECRET_KEY="sua_chave_secreta_aqui"
+    ```
 
-## Estrutura do Projeto (prevista)
-
-```
-book.nook/
-├── .env
-├── .git/
-├── .gitignore
-├── README.md
-├── app/
-│   ├── __init__.py
-│   ├── config.py
-│   ├── database.py
-│   ├── models.py
-│   ├── blueprints/
-│   │   ├── main/
-│   │   │   └── routes.py
-│   │   └── users/
-│   │       └── routes.py
-│   ├── static/         
-│   └── templates/      
-├── requirements.txt
-├── run.py              
-├── tests/              
-└── venv/               
-```
+5.  **Execute a aplicação:**
+    ```bash
+    flask run
+    ```
+    Aceda em `http://127.0.0.1:5000`
 
 ---
-
-## Pré-requisitos
-
-* Python 3.10+ (recomendado)
-* Git
-
-Recomenda-se criar um ambiente virtual para instalar dependências:
-
-**Linux / macOS**
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-**Windows (PowerShell)**
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
----
-
-## Como executar
-
-1. Clone o repositório:
-
-```bash
-git clone <URL-do-repositório>
-cd BookNook
-```
-
-2. Crie e ative o ambiente virtual (veja seção anterior) e instale dependências:
-
-```bash
-pip install -r requirements.txt
-```
-
-3. Configure variáveis de ambiente (ex.: arquivo `.env`). Exemplos:
-
-```
-FLASK_APP=run.py
-FLASK_ENV=development
-DATABASE_URL=sqlite:///booknook.db
-SECRET_KEY=uma_chave_segura
-```
-
-4. Execute migrações (primeira execução):
-
-```bash
-flask db init    # só na primeira vez
-flask db migrate -m "create tables"
-flask db upgrade
-```
-
-5. Inicie a aplicação:
-
-```bash
-flask run
-```
-
-6. Abra no navegador: `http://127.0.0.1:5000/`.
-
----
-
-## Processo Ágil (Cerimônias)
-
-* **Planejamento da Sprint:** no início de cada sprint (Scrum Master / Equipe).
-* **Weekly:** 1–2 vezes por semana, reuniões rápidas de alinhamento (Todos).
-* **Revisão da Sprint:** ao final de cada sprint (Equipe).
-* **Retrospectiva:** após a entrega, para melhorias contínuas (Equipe).
-
----
-
-## Entregáveis
-
-* Código-fonte completo no GitHub.
-* Documentação técnica (README, diagrama de arquitetura, documentação de testes).
-* Apresentação final do projeto.
-* Checklist de funcionalidades testadas.
-* Evidências de integração e testes automatizados.
-
+Desenvolvido por: [Rodrigo Bocayuva](https://www.linkedin.com/in/rodrigobocayuva), [Lucas Fischer](https://www.linkedin.com/in/lucasfischerw/), [Mel Alves](https://www.linkedin.com/in/melalves/), [Markus Lopes](https://www.linkedin.com/in/markus-lopes-2b3102268/) e David Xavier.
