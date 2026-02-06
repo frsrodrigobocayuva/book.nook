@@ -7,7 +7,17 @@
 ![Flask](https://img.shields.io/badge/Framework-Flask-green)
 
 ## 📸 Demonstração
+### 1. Cadastro e Login
 <img width="1680" height="995" alt="image" src="https://github.com/user-attachments/assets/28b9fc0e-e079-4c1a-b369-e8a31dfd7593" />
+
+<br><br>
+### 2. Pesquisa
+<img width="1679" height="994" alt="image" src="https://github.com/user-attachments/assets/66479ef2-47b9-482a-b39d-914070d8053e" />
+
+<br><br>
+### 3. Página do Livro
+<img width="1682" height="996" alt="image" src="https://github.com/user-attachments/assets/cdbc83cd-3766-40d7-99df-910a13902143" />
+
 
 ## 🚀 Funcionalidades Técnicas
 
